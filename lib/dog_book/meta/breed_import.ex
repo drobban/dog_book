@@ -25,7 +25,7 @@ defmodule DogBook.Meta.Import do
   end
 
   def process_breed(file_path \\ @default_path) do
-    file_dev = File.open!(file_path)
+    file_dev = File.open!(file_path, [:utf8])
     stream = IO.stream(file_dev, :line)
 
     breeds = Enum.reduce(stream, [], fn line, acc -> [breed_read(line) | acc] end)
