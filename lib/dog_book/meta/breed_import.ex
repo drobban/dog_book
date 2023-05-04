@@ -1,4 +1,10 @@
-defmodule DogBook.Meta.Import do
+defmodule DogBook.Meta.BreedImport do
+  @doc """
+  The original Hras.txt is encoded in cp865, this assumed to have been
+  pre processed and stored as utf8 instead.
+
+  Maybe cp850 is more correct to be used. Needs further investigation.
+  """
   alias DogBook.Meta.Breed
   @default_path "priv/test_data/temp2.txt"
 

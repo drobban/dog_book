@@ -18,6 +18,8 @@ iex -S mix
 in iex repl
 
 ```elixir
-DogBook.Meta.Import.process_breed()
+DogBook.Meta.BreedImport.process_breed()
 ```
 
+To inspect import
+visit [`localhost:4000/admin/breeds`](http://localhost:4000/admin/breeds) from your browser
