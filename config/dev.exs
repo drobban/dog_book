@@ -4,8 +4,9 @@ import Config
 config :dog_book, DogBook.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
+  hostname: "dog_book_db",
   database: "dog_book_dev",
+  port: 5432,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
