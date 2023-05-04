@@ -31,6 +31,10 @@ dog_book-*.tar
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
 
+# Ignore digested assets cache.
+/priv/test_data/
+
+
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
 /assets/node_modules/

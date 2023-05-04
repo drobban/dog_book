@@ -20,6 +20,18 @@ defmodule DogBookWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/admin", DogBookWeb do
+    pipe_through :browser
+
+    live "/breeds", BreedLive.Index, :index
+    live "/breeds/new", BreedLive.Index, :new
+    live "/breeds/:id/edit", BreedLive.Index, :edit
+
+    live "/breeds/:id", BreedLive.Show, :show
+    live "/breeds/:id/show/edit", BreedLive.Show, :edit
+  end
+
+
   # Other scopes may use custom stacks.
   # scope "/api", DogBookWeb do
   #   pipe_through :api

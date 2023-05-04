@@ -1,0 +1,27 @@
+<.header>
+  Breed <%= @breed.id %>
+  <:subtitle>This is a breed record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/breeds/#{@breed}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit breed</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Number"><%= @breed.number %></:item>
+  <:item title="Name"><%= @breed.name %></:item>
+</.list>
+
+<.back navigate={~p"/admin/breeds"}>Back to breeds</.back>
+
+<.modal :if={@live_action == :edit} id="breed-modal" show on_cancel={JS.patch(~p"/admin/breeds/#{@breed}")}>
+  <.live_component
+    module={DogBookWeb.BreedLive.FormComponent}
+    id={@breed.id}
+    title={@page_title}
+    action={@live_action}
+    breed={@breed}
+    patch={~p"/admin/breeds/#{@breed}"}
+  />
+</.modal>
