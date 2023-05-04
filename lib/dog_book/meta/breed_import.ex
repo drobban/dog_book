@@ -40,13 +40,10 @@ defmodule DogBook.Meta.BreedImport do
       for breed <- breeds do
         case breed do
           %{valid?: true} = changeset ->
-            IO.inspect("Failed; #{changeset.changes.name}")
-
             changeset
             |> DogBook.Repo.insert!()
 
-          %{valid?: false} = changeset ->
-            IO.inspect("Failed; #{changeset.changes.name}")
+          %{valid?: false} = _changeset ->
             nil
         end
       end

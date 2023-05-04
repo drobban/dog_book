@@ -23,3 +23,13 @@ DogBook.Meta.BreedImport.process_breed()
 
 To inspect import
 visit [`localhost:4000/admin/breeds`](http://localhost:4000/admin/breeds) from your browser
+
+
+# TODO
+
+List will get appended during the process as features and missing parts presents itself.
+
+    [ ] Add dog schema. (and relations to other dogs.)
+    [ ] Add schema for competition results. (and schema for what kind/types of results they are)
+    [ ] Add veterinary data
+    [ ] Some proof of concept stats presentation (this will expand...)

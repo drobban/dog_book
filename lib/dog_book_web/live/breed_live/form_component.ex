@@ -21,6 +21,7 @@ defmodule DogBookWeb.BreedLive.FormComponent do
       >
         <.input field={@form[:number]} type="number" label="Number" />
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:sbk_working_dog]} type="checkbox" label="Working dog breed" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Breed</.button>
         </:actions>
