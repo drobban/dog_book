@@ -31,7 +31,6 @@ defmodule DogBookWeb.Router do
     live "/breeds/:id/show/edit", BreedLive.Show, :edit
   end
 
-
   # Other scopes may use custom stacks.
   # scope "/api", DogBookWeb do
   #   pipe_through :api

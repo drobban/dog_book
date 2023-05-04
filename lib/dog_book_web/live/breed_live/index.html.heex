@@ -30,7 +30,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="breed-modal" show on_cancel={JS.patch(~p"/admin/breeds")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="breed-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/breeds")}
+>
   <.live_component
     module={DogBookWeb.BreedLive.FormComponent}
     id={@breed.id || :new}
