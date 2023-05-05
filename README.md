@@ -29,6 +29,7 @@ visit [`localhost:4000/admin/breeds`](http://localhost:4000/admin/breeds) from y
 
 List will get appended during the process as features and missing parts presents itself.
 
+    [x] Add module to read breed files.
     [ ] Add dog schema. (and relations to other dogs.)
     [ ] Add schema for competition results. (and schema for what kind/types of results they are)
     [ ] Add veterinary data
