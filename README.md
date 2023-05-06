@@ -28,7 +28,7 @@ mix phx.gen.live Meta Color colors
 
 mix phx.gen.live Meta Champion champions
 
-mix phx.gen.live Data Dog dogs breed_id:references:breeds registry_uid:string name:string gender:enum:male:female  birth_date:date breed_specific:enum:bobtail:docked:measured coat:enum:short:long:broken size:enum:normal:dwarf:rabbit observe:boolean testicle_status:enum:ok:cryptochid  breeder_id:references:breeders color_number:references:colors
+mix phx.gen.live Data Dog dogs breed_id:references:breeds registry_uid:string name:string gender:enum:male:female  birth_date:date breed_specific:enum:bobtail:docked:measured coat:enum:short:long:broken size:enum:normal:dwarf:rabbit observe:boolean testicle_status:enum:ok:cryptochid:unknown  breeder_id:references:breeders color_number:references:colors
 **has_many of**
 parents:references:dog_parents
 champions:references:dog_champions

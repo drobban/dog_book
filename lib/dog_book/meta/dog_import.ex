@@ -30,7 +30,7 @@ defmodule DogBook.Meta.DogImport do
   @coat_mappings %{"K" => :short, "L" => :long, "S" => :broken}
   @size_mappings %{"N" => :normal, "D" => :dwarf, "K" => :rabbit}
   @observation_mappings %{"S" => true, "" => false}
-  @testicle_mappings %{"G" => :ok, "K" => :cryptochid}
+  @testicle_mappings %{"G" => :ok, "K" => :cryptochid, "" => :unknown}
 
   @format_mappings %{
     3 => @gender_mappings,
@@ -70,6 +70,16 @@ defmodule DogBook.Meta.DogImport do
     dog
   end
 
+  @doc """
+  When importing dogs, it will partially import parents based on the information provided
+  with the current dog.
+
+  When importing a new dog, we also need to check if a partial import already exist, if so
+  we update that with more information.
+
+  Before import of hXXXNN.txt can be imported the following files is expected;
+  uXXXNN.txt, hfarg.txt, hchamp.txt
+  """
   def process_dog(file_path \\ @default_path) do
     file_dev = File.open!(file_path, [:binary])
     result = IO.read(file_dev, :eof)
