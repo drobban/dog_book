@@ -22,7 +22,11 @@ once the server is up, run:
 
 ## Data
 
-mix phx.gen.live Meta Breeder breeders
+mix phx.gen.live Meta Person persons name:string street:string zip_code:integer city:string
+
+mix phx.gen.live Meta Breeder breeders number:integer name:string
+** has many of **
+persons:references:persons
 
 mix phx.gen.live Meta Color colors
 
