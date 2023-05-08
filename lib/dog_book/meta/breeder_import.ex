@@ -3,6 +3,15 @@ defmodule DogBook.Meta.BreederImport do
   uXXXNN.txt is breeder data -
   XXX: breed code.
   NN: serial number.
+
+  @breeder_format
+  Map key: The key can be an integer or an range.
+  A range assumes the input to be a set if Map value is a tuple
+  If the Map value is a list or atom, it is assumed the input is a list.
+  Map value: The value can be an atom, tuple or a list.
+  An atom tells us that the input relate directly to our schema.
+  An list of atoms declares the relation.
+  An tuple assumes the Map key to be a range, the tuple gives us a declaration of relationship and the values that belongs. The tuple is helpful if the input contains a list of 'external' data that relates to our schema.
   """
   @default_path "priv/test_data/data/u12501.txt"
 
