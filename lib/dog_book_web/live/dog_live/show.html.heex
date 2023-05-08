@@ -1,0 +1,39 @@
+<.header>
+  Dog <%= @dog.id %>
+  <:subtitle>This is a dog record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/dogs/#{@dog}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit dog</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @dog.name %></:item>
+  <:item title="Gender"><%= @dog.gender %></:item>
+  <:item title="Birth date"><%= @dog.birth_date %></:item>
+  <:item title="Breed specific"><%= @dog.breed_specific %></:item>
+  <:item title="Coat"><%= @dog.coat %></:item>
+  <:item title="Size"><%= @dog.size %></:item>
+  <:item title="Observe"><%= @dog.observe %></:item>
+  <:item title="Testicle status"><%= @dog.testicle_status %></:item>
+  <:item title="Partial"><%= @dog.partial %></:item>
+</.list>
+
+<.back navigate={~p"/admin/dogs"}>Back to dogs</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="dog-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/dogs/#{@dog}")}
+>
+  <.live_component
+    module={DogBookWeb.DogLive.FormComponent}
+    id={@dog.id}
+    title={@page_title}
+    action={@live_action}
+    dog={@dog}
+    patch={~p"/admin/dogs/#{@dog}"}
+  />
+</.modal>

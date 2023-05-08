@@ -37,6 +37,8 @@ defmodule DogBook.Meta do
   """
   def get_breed!(id), do: Repo.get!(Breed, id)
 
+  def get_breed_number!(number), do: Repo.get_by!(Breed, number: number)
+
   @doc """
   Creates a breed.
 
@@ -252,6 +254,8 @@ defmodule DogBook.Meta do
 
   """
   def get_breeder!(id), do: Repo.get!(Breeder, id) |> Repo.preload(:persons)
+
+  def get_breeder_number!(number), do: Repo.get_by!(Breeder, number: number)
 
   @doc """
   Creates a breeder.

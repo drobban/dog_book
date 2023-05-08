@@ -1,9 +1,10 @@
-defmodule DogBook.Meta.DogImport do
+defmodule DogBook.Data.DogImport do
   @doc """
   hXXXNN.txt is dog data -
   XXX: breed code.
   NN: serial number
   """
+  alias DogBook.Data.Dog
   @default_path 'priv/test_data/data/h12501.txt'
 
   # Check if we can work with ranges.
@@ -21,7 +22,7 @@ defmodule DogBook.Meta.DogImport do
     15 => :testicle_status,
     16 => [:parents, :father_id],
     17 => [:parents, :mother_id],
-    18 => [:breeder, :uid],
+    18 => [:breeder, :number],
     19 => [:color, :number]
   }
 
@@ -40,6 +41,37 @@ defmodule DogBook.Meta.DogImport do
     14 => @observation_mappings,
     15 => @testicle_mappings
   }
+
+  def dog_changeset(attrs) do
+    initialized_attrs =
+      Enum.reduce(attrs, %{}, fn {k, v}, acc ->
+        case k do
+          [:breed, :number] ->
+            if v == "" or is_nil(v) do
+              Map.put(acc, :breeder_id, nil)
+            else
+              breed = DogBook.Meta.get_breed_number!(v)
+              Map.put(acc, :breed_id, breed.id)
+            end
+
+          [:breeder, :number] ->
+            if v == "" or is_nil(v) do
+              Map.put(acc, :breeder_id, nil)
+            else
+              breeder = DogBook.Meta.get_breeder_number!(v)
+              Map.put(acc, :breeder_id, breeder.id)
+            end
+
+          x when is_atom(x) ->
+            Map.put(acc, x, v)
+
+          _else ->
+            acc
+        end
+      end)
+
+    Dog.changeset(%Dog{}, initialized_attrs)
+  end
 
   def dog_read(line) do
     list = String.split(line, "\t")
@@ -92,6 +124,8 @@ defmodule DogBook.Meta.DogImport do
         [dog_read(line) | acc]
       end)
 
-    dogs
+    Enum.reduce(dogs, [], fn dog, acc ->
+      [dog_changeset(dog) | acc]
+    end)
   end
 end

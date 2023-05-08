@@ -39,7 +39,8 @@ mix phx.gen.live Meta Champion champions number:integer champ_name:string
 
 mix phx.gen.live Data Record records registry_uid:string country:string dog_id:references:dogs
 
-mix phx.gen.live Data Dog dogs breed_id:references:breeds name:string gender:enum:male:female birth_date:date breed_specific:enum:bobtail:docked:measured coat:enum:short:long:broken size:enum:normal:dwarf:rabbit observe:boolean testicle_status:enum:ok:cryptochid:unknown  breeder_id:references:breeders color_number:references:colors
+** done **
+mix phx.gen.live Data Dog dogs breed_id:references:breeds name:string gender:enum:male:female birth_date:date breed_specific:enum:bobtail:docked:measured coat:enum:short:long:broken size:enum:normal:dwarf:rabbit observe:boolean testicle_status:enum:ok:cryptochid:unknown  breeder_id:references:breeders color_number:references:colors partial:boolean
 **relations**
 many_to_many parents:references:dog_parents
 many_to_many champions:references:dog_champions
@@ -78,7 +79,7 @@ List will get appended during the process as features and missing parts presents
     [x] Add Breeder schema
     [x] Add Champions schema
     [x] Add Color schema
-    [ ] Add dog schema. (and relations to other dogs.)
+    [x] Add dog schema. (and relations to other dogs.)
     [x] Add person schema
     [x] process fn for breeds.
     [ ] process fn for dog import

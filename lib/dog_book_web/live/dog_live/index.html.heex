@@ -1,0 +1,54 @@
+<.header>
+  Listing Dogs
+  <:actions>
+    <.link patch={~p"/admin/dogs/new"}>
+      <.button>New Dog</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="dogs"
+  rows={@streams.dogs}
+  row_click={fn {_id, dog} -> JS.navigate(~p"/admin/dogs/#{dog}") end}
+>
+  <:col :let={{_id, dog}} label="Name"><%= dog.name %></:col>
+  <:col :let={{_id, dog}} label="Gender"><%= dog.gender %></:col>
+  <:col :let={{_id, dog}} label="Birth date"><%= dog.birth_date %></:col>
+  <:col :let={{_id, dog}} label="Breed specific"><%= dog.breed_specific %></:col>
+  <:col :let={{_id, dog}} label="Coat"><%= dog.coat %></:col>
+  <:col :let={{_id, dog}} label="Size"><%= dog.size %></:col>
+  <:col :let={{_id, dog}} label="Observe"><%= dog.observe %></:col>
+  <:col :let={{_id, dog}} label="Testicle status"><%= dog.testicle_status %></:col>
+  <:col :let={{_id, dog}} label="Partial"><%= dog.partial %></:col>
+  <:action :let={{_id, dog}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/dogs/#{dog}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/dogs/#{dog}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, dog}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: dog.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="dog-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/dogs")}
+>
+  <.live_component
+    module={DogBookWeb.DogLive.FormComponent}
+    id={@dog.id || :new}
+    title={@page_title}
+    action={@live_action}
+    dog={@dog}
+    patch={~p"/admin/dogs"}
+  />
+</.modal>
