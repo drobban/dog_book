@@ -1,0 +1,45 @@
+<.header>
+  Listing Persons
+  <:actions>
+    <.link patch={~p"/admin/persons/new"}>
+      <.button>New Person</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="persons"
+  rows={@streams.persons}
+  row_click={fn {_id, person} -> JS.navigate(~p"/admin/persons/#{person}") end}
+>
+  <:col :let={{_id, person}} label="Name"><%= person.name %></:col>
+  <:col :let={{_id, person}} label="Street"><%= person.street %></:col>
+  <:col :let={{_id, person}} label="Zip code"><%= person.zip_code %></:col>
+  <:col :let={{_id, person}} label="City"><%= person.city %></:col>
+  <:col :let={{_id, person}} label="Phone"><%= person.phone %></:col>
+  <:action :let={{_id, person}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/persons/#{person}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/persons/#{person}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, person}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: person.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="person-modal" show on_cancel={JS.patch(~p"/admin/persons")}>
+  <.live_component
+    module={DogBookWeb.PersonLive.FormComponent}
+    id={@person.id || :new}
+    title={@page_title}
+    action={@live_action}
+    person={@person}
+    patch={~p"/admin/persons"}
+  />
+</.modal>

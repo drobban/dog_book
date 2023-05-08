@@ -23,7 +23,8 @@ once the server is up, run:
 ## Data
 
 ```bash
-mix phx.gen.live Meta Person persons name:string street:string zip_code:integer city:string
+**don**
+mix phx.gen.live Meta Person persons name:string street:string zip_code:integer city:string phone:string
 
 mix phx.gen.live Meta Breeder breeders number:integer name:string
 **relations**
