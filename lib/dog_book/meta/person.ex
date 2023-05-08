@@ -16,6 +16,6 @@ defmodule DogBook.Meta.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [:name, :street, :zip_code, :city, :phone])
-    |> validate_required([:name, :street, :zip_code, :city, :phone])
+    |> validate_required([:name, :street])
   end
 end

@@ -12,6 +12,11 @@ defmodule DogBook.Meta.BreederImport do
   An atom tells us that the input relate directly to our schema.
   An list of atoms declares the relation.
   An tuple assumes the Map key to be a range, the tuple gives us a declaration of relationship and the values that belongs. The tuple is helpful if the input contains a list of 'external' data that relates to our schema.
+
+  private function map_read assumes the following;
+  argument range & c depends upon each other and is also assumed
+  to be of equal length. For each key in list c there should be a corrensponding idx in range.
+
   """
   @default_path "priv/test_data/data/u12501.txt"
 
@@ -22,13 +27,9 @@ defmodule DogBook.Meta.BreederImport do
     (7..11) => {:persons, [:name, :street, :zip_code, :city, :phone]}
   }
 
-  @doc """
-  argument range & c depends upon each other and is also assumed
-  to be of equal length. For each key in list c there should be a corrensponding idx in range.
-  """
-  def map_read(nil, range, {_k, _c} = m, list), do: map_read([], range, m, list)
+  defp map_read(nil, range, {_k, _c} = m, list), do: map_read([], range, m, list)
 
-  def map_read(acc, range, {_k, c} = _m, list) do
+  defp map_read(acc, range, {_k, c} = _m, list) do
     fields = Enum.zip(range, c)
 
     data_map =
@@ -40,7 +41,7 @@ defmodule DogBook.Meta.BreederImport do
     [data_map | acc]
   end
 
-  def breeder_read(line) do
+  defp breeder_read(line) do
     list = String.split(line, "\t")
 
     Enum.reduce(@breeder_format, %{}, fn {idx, k}, acc ->
@@ -56,6 +57,40 @@ defmodule DogBook.Meta.BreederImport do
           acc
       end
     end)
+  end
+
+  defp person_changesets(persons) do
+    person_cs =
+      Enum.reduce(persons, [], fn p, acc ->
+        cs = DogBook.Meta.Person.changeset(%DogBook.Meta.Person{}, p)
+        [cs | acc]
+      end)
+
+    person_cs
+    |> Enum.filter(fn cs -> cs.valid? == true end)
+  end
+
+  defp breeder_update_or_insert(breeder) do
+    {persons, breeder} = Map.pop(breeder, :persons)
+
+    persons_cs = person_changesets(persons)
+
+    breeder_cs = DogBook.Meta.Breeder.changeset(%DogBook.Meta.Breeder{}, breeder)
+
+    cond do
+      breeder_cs.valid? ->
+        persons =
+          Enum.reduce(persons_cs, [], fn p, acc ->
+            [DogBook.Meta.get_or_create_person(p) | acc]
+          end)
+
+        breeder
+        |> Map.put(:persons, persons)
+        |> DogBook.Meta.update_or_create_breeder()
+
+      true ->
+        %DogBook.Meta.Breeder{}
+    end
   end
 
   @doc """
@@ -77,6 +112,8 @@ defmodule DogBook.Meta.BreederImport do
         [breeder_read(line) | acc]
       end)
 
-    breeders
+    Enum.reduce(breeders, [], fn b, acc ->
+      [breeder_update_or_insert(b) | acc]
+    end)
   end
 end

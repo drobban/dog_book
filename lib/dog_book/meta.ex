@@ -151,6 +151,29 @@ defmodule DogBook.Meta do
     |> Repo.insert()
   end
 
+  def get_or_create_person(changeset) do
+    attrs = changeset.changes
+    # If we get a match - we assume it to be the same person.
+    query =
+      from p in Person,
+        where: p.name == ^attrs[:name] and p.street == ^attrs[:street],
+        select: p
+
+    results =
+      query
+      |> Repo.all()
+
+    cond do
+      Enum.empty?(results) ->
+        {:ok, person} = create_person(attrs)
+        person
+
+      true ->
+        # Should only get one result, so no matter what - we take first.
+        Enum.at(results, 0)
+    end
+  end
+
   @doc """
   Updates a person.
 
@@ -246,6 +269,29 @@ defmodule DogBook.Meta do
     %Breeder{}
     |> Breeder.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_or_create_breeder(attrs) do
+    # If we get a match - we assume it to be the same person.
+    query =
+      from b in Breeder,
+        where: b.number == ^attrs[:number],
+        select: b
+
+    results =
+      query
+      |> Repo.all()
+
+    cond do
+      Enum.empty?(results) ->
+        {:ok, breeder} = create_breeder(attrs)
+        breeder
+
+      true ->
+        # Should only get one result, so no matter what - we take first.
+        breeder = get_breeder!(Enum.at(results, 0).id)
+        update_breeder(breeder, attrs)
+    end
   end
 
   @doc """
