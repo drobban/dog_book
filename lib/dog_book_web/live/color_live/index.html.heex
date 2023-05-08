@@ -1,0 +1,47 @@
+<.header>
+  Listing Colors
+  <:actions>
+    <.link patch={~p"/admin/colors/new"}>
+      <.button>New Color</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="colors"
+  rows={@streams.colors}
+  row_click={fn {_id, color} -> JS.navigate(~p"/admin/colors/#{color}") end}
+>
+  <:col :let={{_id, color}} label="Number"><%= color.number %></:col>
+  <:col :let={{_id, color}} label="Color"><%= color.color %></:col>
+  <:action :let={{_id, color}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/colors/#{color}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/colors/#{color}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, color}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: color.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="color-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/colors")}
+>
+  <.live_component
+    module={DogBookWeb.ColorLive.FormComponent}
+    id={@color.id || :new}
+    title={@page_title}
+    action={@live_action}
+    color={@color}
+    patch={~p"/admin/colors"}
+  />
+</.modal>

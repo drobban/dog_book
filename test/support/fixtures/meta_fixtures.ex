@@ -66,4 +66,19 @@ defmodule DogBook.MetaFixtures do
 
     champion
   end
+
+  @doc """
+  Generate a color.
+  """
+  def color_fixture(attrs \\ %{}) do
+    {:ok, color} =
+      attrs
+      |> Enum.into(%{
+        color: "some color",
+        number: 42
+      })
+      |> DogBook.Meta.create_color()
+
+    color
+  end
 end

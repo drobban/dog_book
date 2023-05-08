@@ -459,4 +459,123 @@ defmodule DogBook.Meta do
   def change_champion(%Champion{} = champion, attrs \\ %{}) do
     Champion.changeset(champion, attrs)
   end
+
+  alias DogBook.Meta.Color
+
+  @doc """
+  Returns the list of colors.
+
+  ## Examples
+
+      iex> list_colors()
+      [%Color{}, ...]
+
+  """
+  def list_colors do
+    Repo.all(Color)
+  end
+
+  @doc """
+  Gets a single color.
+
+  Raises `Ecto.NoResultsError` if the Color does not exist.
+
+  ## Examples
+
+      iex> get_color!(123)
+      %Color{}
+
+      iex> get_color!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_color!(id), do: Repo.get!(Color, id)
+
+  @doc """
+  Creates a color.
+
+  ## Examples
+
+      iex> create_color(%{field: value})
+      {:ok, %Color{}}
+
+      iex> create_color(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_color(attrs \\ %{}) do
+    %Color{}
+    |> Color.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_or_create_color(attrs) do
+    # If we get a match - we assume it to be the same person.
+    query =
+      from c in Color,
+        where: c.number == ^attrs[:number],
+        select: c
+
+    results =
+      query
+      |> Repo.all()
+
+    cond do
+      Enum.empty?(results) ->
+        {:ok, color} = create_color(attrs)
+        color
+
+      true ->
+        # Should only get one result, so no matter what - we take first.
+        color = get_color!(Enum.at(results, 0).id)
+        update_color(color, attrs)
+    end
+  end
+
+  @doc """
+  Updates a color.
+
+  ## Examples
+
+      iex> update_color(color, %{field: new_value})
+      {:ok, %Color{}}
+
+      iex> update_color(color, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_color(%Color{} = color, attrs) do
+    color
+    |> Color.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a color.
+
+  ## Examples
+
+      iex> delete_color(color)
+      {:ok, %Color{}}
+
+      iex> delete_color(color)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_color(%Color{} = color) do
+    Repo.delete(color)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking color changes.
+
+  ## Examples
+
+      iex> change_color(color)
+      %Ecto.Changeset{data: %Color{}}
+
+  """
+  def change_color(%Color{} = color, attrs \\ %{}) do
+    Color.changeset(color, attrs)
+  end
 end

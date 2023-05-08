@@ -1,0 +1,32 @@
+<.header>
+  Color <%= @color.id %>
+  <:subtitle>This is a color record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/colors/#{@color}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit color</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Number"><%= @color.number %></:item>
+  <:item title="Color"><%= @color.color %></:item>
+</.list>
+
+<.back navigate={~p"/admin/colors"}>Back to colors</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="color-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/colors/#{@color}")}
+>
+  <.live_component
+    module={DogBookWeb.ColorLive.FormComponent}
+    id={@color.id}
+    title={@page_title}
+    action={@live_action}
+    color={@color}
+    patch={~p"/admin/colors/#{@color}"}
+  />
+</.modal>

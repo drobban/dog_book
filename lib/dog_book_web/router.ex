@@ -50,6 +50,13 @@ defmodule DogBookWeb.Router do
 
     live "/champions/:id", ChampionLive.Show, :show
     live "/champions/:id/show/edit", ChampionLive.Show, :edit
+
+    live "/colors", ColorLive.Index, :index
+    live "/colors/new", ColorLive.Index, :new
+    live "/colors/:id/edit", ColorLive.Index, :edit
+
+    live "/colors/:id", ColorLive.Show, :show
+    live "/colors/:id/show/edit", ColorLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
