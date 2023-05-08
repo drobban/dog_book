@@ -103,4 +103,60 @@ defmodule DogBook.DataTest do
       assert %Ecto.Changeset{} = Data.change_dog(dog)
     end
   end
+
+  describe "records" do
+    alias DogBook.Data.Record
+
+    import DogBook.DataFixtures
+
+    @invalid_attrs %{country: nil, registry_uid: nil}
+
+    test "list_records/0 returns all records" do
+      record = record_fixture()
+      assert Data.list_records() == [record]
+    end
+
+    test "get_record!/1 returns the record with given id" do
+      record = record_fixture()
+      assert Data.get_record!(record.id) == record
+    end
+
+    test "create_record/1 with valid data creates a record" do
+      valid_attrs = %{country: "some country", registry_uid: "some registry_uid"}
+
+      assert {:ok, %Record{} = record} = Data.create_record(valid_attrs)
+      assert record.country == "some country"
+      assert record.registry_uid == "some registry_uid"
+    end
+
+    test "create_record/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_record(@invalid_attrs)
+    end
+
+    test "update_record/2 with valid data updates the record" do
+      record = record_fixture()
+      update_attrs = %{country: "some updated country", registry_uid: "some updated registry_uid"}
+
+      assert {:ok, %Record{} = record} = Data.update_record(record, update_attrs)
+      assert record.country == "some updated country"
+      assert record.registry_uid == "some updated registry_uid"
+    end
+
+    test "update_record/2 with invalid data returns error changeset" do
+      record = record_fixture()
+      assert {:error, %Ecto.Changeset{}} = Data.update_record(record, @invalid_attrs)
+      assert record == Data.get_record!(record.id)
+    end
+
+    test "delete_record/1 deletes the record" do
+      record = record_fixture()
+      assert {:ok, %Record{}} = Data.delete_record(record)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_record!(record.id) end
+    end
+
+    test "change_record/1 returns a record changeset" do
+      record = record_fixture()
+      assert %Ecto.Changeset{} = Data.change_record(record)
+    end
+  end
 end

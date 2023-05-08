@@ -5,6 +5,7 @@ defmodule DogBook.Data.DogImport do
   NN: serial number
   """
   alias DogBook.Data.Dog
+  alias DogBook.Data
   @default_path 'priv/test_data/data/h12501.txt'
 
   # Check if we can work with ranges.
@@ -48,7 +49,7 @@ defmodule DogBook.Data.DogImport do
         case k do
           [:breed, :number] ->
             if v == "" or is_nil(v) do
-              Map.put(acc, :breeder_id, nil)
+              Map.put(acc, :breed_id, nil)
             else
               breed = DogBook.Meta.get_breed_number!(v)
               Map.put(acc, :breed_id, breed.id)
@@ -62,6 +63,22 @@ defmodule DogBook.Data.DogImport do
               Map.put(acc, :breeder_id, breeder.id)
             end
 
+          [:parents, :father_id] when not is_nil(v) ->
+            # parent_attrs = %{gender: :male, registry_uid: v}
+            parent_attrs = %{gender: :male, registry_uid: v}
+            parent = Dog.partial_parent(%Dog{}, parent_attrs)
+            # parent = Data.get_or_create_parent(parent_attrs)
+            parents = Map.get(acc, :parents, [])
+            Map.put(acc, :parents, [parent | parents])
+
+          [:parents, :mother_id] when not is_nil(v) ->
+            # parent_attrs = %{gender: :female, registry_uid: v}
+            parent_attrs = %{gender: :female, registry_uid: v}
+            parent = Dog.partial_parent(%Dog{}, parent_attrs)
+            # parent = Data.get_or_create_parent(parent_attrs)
+            parents = Map.get(acc, :parents, [])
+            Map.put(acc, :parents, [parent | parents])
+
           x when is_atom(x) ->
             Map.put(acc, x, v)
 
@@ -70,7 +87,17 @@ defmodule DogBook.Data.DogImport do
         end
       end)
 
-    Dog.changeset(%Dog{}, initialized_attrs)
+    dog_cs = Dog.changeset(%Dog{}, initialized_attrs)
+
+    [dog_cs, initialized_attrs]
+    # if dog_cs.valid? do
+    #   # Dog.create_dog(dog_cs.changes)
+    #   dog_cs
+    # else
+    #   # initialized_attrs = initialized_attrs |> Map.put(:partial, true)
+    #   # Dog.partial_parent(%Dog{}, initialized_attrs)
+    #   initialized_attrs |> Map.put(:partial, true)
+    # end
   end
 
   def dog_read(line) do
@@ -127,5 +154,6 @@ defmodule DogBook.Data.DogImport do
     Enum.reduce(dogs, [], fn dog, acc ->
       [dog_changeset(dog) | acc]
     end)
+    |> Enum.at(50)
   end
 end

@@ -37,6 +37,7 @@ mix phx.gen.live Meta Color colors number:integer color:string
 **done**
 mix phx.gen.live Meta Champion champions number:integer champ_name:string
 
+**done**
 mix phx.gen.live Data Record records registry_uid:string country:string dog_id:references:dogs
 
 ** done **
@@ -49,6 +50,7 @@ has_many records
 **done**
 mix phx.gen.schema Meta.BreederPersons breeder_persons breeder_id:references:breeders person_id:references:persons
 
+**done**
 mix phx.gen.schema Data.DogParents dog_parents dog_id:references:dogs parent_id:references:dogs
 
 

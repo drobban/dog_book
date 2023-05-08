@@ -1,0 +1,47 @@
+<.header>
+  Listing Records
+  <:actions>
+    <.link patch={~p"/admin/records/new"}>
+      <.button>New Record</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="records"
+  rows={@streams.records}
+  row_click={fn {_id, record} -> JS.navigate(~p"/admin/records/#{record}") end}
+>
+  <:col :let={{_id, record}} label="Registry uid"><%= record.registry_uid %></:col>
+  <:col :let={{_id, record}} label="Country"><%= record.country %></:col>
+  <:action :let={{_id, record}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/records/#{record}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/records/#{record}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, record}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: record.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="record-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/records")}
+>
+  <.live_component
+    module={DogBookWeb.RecordLive.FormComponent}
+    id={@record.id || :new}
+    title={@page_title}
+    action={@live_action}
+    record={@record}
+    patch={~p"/admin/records"}
+  />
+</.modal>

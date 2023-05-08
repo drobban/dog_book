@@ -25,4 +25,19 @@ defmodule DogBook.DataFixtures do
 
     dog
   end
+
+  @doc """
+  Generate a record.
+  """
+  def record_fixture(attrs \\ %{}) do
+    {:ok, record} =
+      attrs
+      |> Enum.into(%{
+        country: "some country",
+        registry_uid: "some registry_uid"
+      })
+      |> DogBook.Data.create_record()
+
+    record
+  end
 end

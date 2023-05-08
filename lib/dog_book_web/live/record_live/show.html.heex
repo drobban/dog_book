@@ -1,0 +1,32 @@
+<.header>
+  Record <%= @record.id %>
+  <:subtitle>This is a record record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/records/#{@record}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit record</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Registry uid"><%= @record.registry_uid %></:item>
+  <:item title="Country"><%= @record.country %></:item>
+</.list>
+
+<.back navigate={~p"/admin/records"}>Back to records</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="record-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/records/#{@record}")}
+>
+  <.live_component
+    module={DogBookWeb.RecordLive.FormComponent}
+    id={@record.id}
+    title={@page_title}
+    action={@live_action}
+    record={@record}
+    patch={~p"/admin/records/#{@record}"}
+  />
+</.modal>
