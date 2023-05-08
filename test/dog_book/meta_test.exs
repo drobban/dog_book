@@ -77,7 +77,13 @@ defmodule DogBook.MetaTest do
     end
 
     test "create_person/1 with valid data creates a person" do
-      valid_attrs = %{city: "some city", name: "some name", phone: "some phone", street: "some street", zip_code: 42}
+      valid_attrs = %{
+        city: "some city",
+        name: "some name",
+        phone: "some phone",
+        street: "some street",
+        zip_code: 42
+      }
 
       assert {:ok, %Person{} = person} = Meta.create_person(valid_attrs)
       assert person.city == "some city"
@@ -93,7 +99,14 @@ defmodule DogBook.MetaTest do
 
     test "update_person/2 with valid data updates the person" do
       person = person_fixture()
-      update_attrs = %{city: "some updated city", name: "some updated name", phone: "some updated phone", street: "some updated street", zip_code: 43}
+
+      update_attrs = %{
+        city: "some updated city",
+        name: "some updated name",
+        phone: "some updated phone",
+        street: "some updated street",
+        zip_code: 43
+      }
 
       assert {:ok, %Person{} = person} = Meta.update_person(person, update_attrs)
       assert person.city == "some updated city"

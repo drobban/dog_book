@@ -15,7 +15,12 @@
 
 <.back navigate={~p"/admin/breeders"}>Back to breeders</.back>
 
-<.modal :if={@live_action == :edit} id="breeder-modal" show on_cancel={JS.patch(~p"/admin/breeders/#{@breeder}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="breeder-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/breeders/#{@breeder}")}
+>
   <.live_component
     module={DogBookWeb.BreederLive.FormComponent}
     id={@breeder.id}

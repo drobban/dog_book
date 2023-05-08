@@ -18,7 +18,12 @@
 
 <.back navigate={~p"/admin/persons"}>Back to persons</.back>
 
-<.modal :if={@live_action == :edit} id="person-modal" show on_cancel={JS.patch(~p"/admin/persons/#{@person}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="person-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/persons/#{@person}")}
+>
   <.live_component
     module={DogBookWeb.PersonLive.FormComponent}
     id={@person.id}

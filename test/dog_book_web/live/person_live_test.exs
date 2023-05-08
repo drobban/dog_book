@@ -4,8 +4,20 @@ defmodule DogBookWeb.PersonLiveTest do
   import Phoenix.LiveViewTest
   import DogBook.MetaFixtures
 
-  @create_attrs %{city: "some city", name: "some name", phone: "some phone", street: "some street", zip_code: 42}
-  @update_attrs %{city: "some updated city", name: "some updated name", phone: "some updated phone", street: "some updated street", zip_code: 43}
+  @create_attrs %{
+    city: "some city",
+    name: "some name",
+    phone: "some phone",
+    street: "some street",
+    zip_code: 42
+  }
+  @update_attrs %{
+    city: "some updated city",
+    name: "some updated name",
+    phone: "some updated phone",
+    street: "some updated street",
+    zip_code: 43
+  }
   @invalid_attrs %{city: nil, name: nil, phone: nil, street: nil, zip_code: nil}
 
   defp create_person(_) do
