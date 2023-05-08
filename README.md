@@ -22,6 +22,7 @@ once the server is up, run:
 
 ## Data
 
+```bash
 mix phx.gen.live Meta Person persons name:string street:string zip_code:integer city:string
 
 mix phx.gen.live Meta Breeder breeders number:integer name:string
@@ -46,6 +47,7 @@ mix phx.gen.schema Data.DogParents dog_parents dog_id:references:dogs parent_id:
 mix phx.gen.schema Meta.BreederPersons breeder_persons breeder_id:references:breeders person_id:references:persons
 
 mix phx.gen.schema Meta.ChampionDogs champion_dogs champion_id:references:champions dog_id:references:dogs
+```
 
 ## Setup Meta data - breeds
 
