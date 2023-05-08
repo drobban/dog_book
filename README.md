@@ -75,7 +75,9 @@ List will get appended during the process as features and missing parts presents
     [x] Add person schema
     [x] process fn for breeds.
     [ ] process fn for dog import
+    [x] dog import format
     [ ] process fn for breeder import
+    [x] breeder import format
     [ ] process fn for champion import
     [ ] process fn for color import
     [ ] Upload/Process fn for breed package (zip-file)
