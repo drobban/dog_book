@@ -81,11 +81,10 @@ defmodule DogBook.Meta.DogImport do
   uXXXNN.txt, hfarg.txt, hchamp.txt, Hras.txt
   """
   def process_dog(file_path \\ @default_path) do
-    file_dev = File.open!(file_path, [:binary])
-    result = IO.read(file_dev, :eof)
+    {:ok, result} = File.read(file_path)
 
     lines =
-      :iconv.convert("utf-8", "cp850", result)
+      :iconv.convert("cp852", "utf-8", result)
       |> String.split("\r")
 
     dogs =

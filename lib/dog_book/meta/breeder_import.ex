@@ -100,11 +100,10 @@ defmodule DogBook.Meta.BreederImport do
   This import is assumed to be performed before importing hXXXNN.txt.
   """
   def process_breeder(file_path \\ @default_path) do
-    file_dev = File.open!(file_path, [:binary])
-    result = IO.read(file_dev, :eof)
+    {:ok, result} = File.read(file_path)
 
     lines =
-      :iconv.convert("utf-8", "cp850", result)
+      :iconv.convert("cp852", "utf-8", result)
       |> String.split("\r")
 
     breeders =
