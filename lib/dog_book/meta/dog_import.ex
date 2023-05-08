@@ -9,10 +9,10 @@ defmodule DogBook.Meta.DogImport do
   # Check if we can work with ranges.
   @dog_format %{
     0 => [:breed, :number],
-    1 => :registry_number,
+    1 => [:record, :registry_uid],
     2 => :name,
     3 => :gender,
-    4..9 => [:championships, :number],
+    (4..9) => [:championships, :number],
     10 => :birth_date,
     11 => :breed_specific,
     12 => :coat,
@@ -38,7 +38,7 @@ defmodule DogBook.Meta.DogImport do
     12 => @coat_mappings,
     13 => @size_mappings,
     14 => @observation_mappings,
-    15 => @testicle_mappings,
+    15 => @testicle_mappings
   }
 
   def dog_read(line) do
@@ -46,26 +46,26 @@ defmodule DogBook.Meta.DogImport do
 
     # Format mappings is only used in the is_integer(idx) case.
     dog =
-      Enum.reduce(@dog_format, %{},
-        fn {idx, k}, acc ->
-          cond do
-            is_integer(idx) and !is_nil(k) ->
-              val =
-                if Map.has_key?(@format_mappings, idx) do
-                  data_key = Enum.at(list, idx)
-                  @format_mappings[idx][data_key]
-                else
-                  Enum.at(list, idx)
-                end
-              Map.put(acc, k, val)
-            is_struct(idx) ->
-              Map.put(acc, k,
-                Enum.reduce(idx, [],
-                  fn i, acc -> [Enum.at(list, i) | acc] end))
-            true ->
-              acc
-          end
-        end)
+      Enum.reduce(@dog_format, %{}, fn {idx, k}, acc ->
+        cond do
+          is_integer(idx) and !is_nil(k) ->
+            val =
+              if Map.has_key?(@format_mappings, idx) do
+                data_key = Enum.at(list, idx)
+                @format_mappings[idx][data_key]
+              else
+                Enum.at(list, idx)
+              end
+
+            Map.put(acc, k, val)
+
+          is_struct(idx) ->
+            Map.put(acc, k, Enum.reduce(idx, [], fn i, acc -> [Enum.at(list, i) | acc] end))
+
+          true ->
+            acc
+        end
+      end)
 
     dog
   end
@@ -78,19 +78,20 @@ defmodule DogBook.Meta.DogImport do
   we update that with more information.
 
   Before import of hXXXNN.txt can be imported the following files is expected;
-  uXXXNN.txt, hfarg.txt, hchamp.txt
+  uXXXNN.txt, hfarg.txt, hchamp.txt, Hras.txt
   """
   def process_dog(file_path \\ @default_path) do
     file_dev = File.open!(file_path, [:binary])
     result = IO.read(file_dev, :eof)
 
     lines =
-      :iconv.convert("utf-8", "cp850",  result)
+      :iconv.convert("utf-8", "cp850", result)
       |> String.split("\r")
 
-    dogs = Enum.reduce(lines, [], fn line, acc ->
-      [dog_read(line) | acc]
-    end)
+    dogs =
+      Enum.reduce(lines, [], fn line, acc ->
+        [dog_read(line) | acc]
+      end)
 
     dogs
   end
