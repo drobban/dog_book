@@ -211,6 +211,7 @@ defmodule DogBook.Meta do
   """
   def list_breeders do
     Repo.all(Breeder)
+    |> Repo.preload(:persons)
   end
 
   @doc """
@@ -227,7 +228,7 @@ defmodule DogBook.Meta do
       ** (Ecto.NoResultsError)
 
   """
-  def get_breeder!(id), do: Repo.get!(Breeder, id)
+  def get_breeder!(id), do: Repo.get!(Breeder, id) |> Repo.preload(:persons)
 
   @doc """
   Creates a breeder.

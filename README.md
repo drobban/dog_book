@@ -43,10 +43,11 @@ many_to_many parents:references:dog_parents
 many_to_many champions:references:dog_champions
 has_many records
 
+**done**
+mix phx.gen.schema Meta.BreederPersons breeder_persons breeder_id:references:breeders person_id:references:persons
 
 mix phx.gen.schema Data.DogParents dog_parents dog_id:references:dogs parent_id:references:dogs
 
-mix phx.gen.schema Meta.BreederPersons breeder_persons breeder_id:references:breeders person_id:references:persons
 
 mix phx.gen.schema Meta.ChampionDogs champion_dogs champion_id:references:champions dog_id:references:dogs
 ```
