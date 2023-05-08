@@ -51,4 +51,19 @@ defmodule DogBook.MetaFixtures do
 
     breeder
   end
+
+  @doc """
+  Generate a champion.
+  """
+  def champion_fixture(attrs \\ %{}) do
+    {:ok, champion} =
+      attrs
+      |> Enum.into(%{
+        champ_name: "some champ_name",
+        number: 42
+      })
+      |> DogBook.Meta.create_champion()
+
+    champion
+  end
 end

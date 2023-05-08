@@ -32,11 +32,16 @@ defmodule DogBook.Meta.BreedImport do
 
   # TODO: Have a look at how file is processed in dog_import
   # refactor so the file is read in cp850 and then transformed utf-8
+  #
+  # NEED TESTING TO MAKE SURE IT WORKS!
   def process_breed(file_path \\ @default_path) do
-    file_dev = File.open!(file_path, [:utf8])
-    stream = IO.stream(file_dev, :line)
+    {:ok, result} = File.read(file_path)
 
-    breeds = Enum.reduce(stream, [], fn line, acc -> [breed_read(line) | acc] end)
+    lines =
+      :iconv.convert("cp852", "utf-8", result)
+      |> String.split("\r")
+
+    breeds = Enum.reduce(lines, [], fn line, acc -> [breed_read(line) | acc] end)
 
     saved =
       for breed <- breeds do

@@ -1,0 +1,47 @@
+<.header>
+  Listing Champions
+  <:actions>
+    <.link patch={~p"/admin/champions/new"}>
+      <.button>New Champion</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="champions"
+  rows={@streams.champions}
+  row_click={fn {_id, champion} -> JS.navigate(~p"/admin/champions/#{champion}") end}
+>
+  <:col :let={{_id, champion}} label="Number"><%= champion.number %></:col>
+  <:col :let={{_id, champion}} label="Champ name"><%= champion.champ_name %></:col>
+  <:action :let={{_id, champion}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/champions/#{champion}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/champions/#{champion}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, champion}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: champion.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="champion-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/champions")}
+>
+  <.live_component
+    module={DogBookWeb.ChampionLive.FormComponent}
+    id={@champion.id || :new}
+    title={@page_title}
+    action={@live_action}
+    champion={@champion}
+    patch={~p"/admin/champions"}
+  />
+</.modal>

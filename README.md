@@ -31,9 +31,10 @@ mix phx.gen.live Meta Breeder breeders number:integer name:string
 **relations**
 many_to_many persons:references:persons
 
-mix phx.gen.live Meta Color colors
+mix phx.gen.live Meta Color colors number:integer color:string
 
-mix phx.gen.live Meta Champion champions
+**done**
+mix phx.gen.live Meta Champion champions number:integer champ_name:string
 
 mix phx.gen.live Data Record records registry_uid:string country:string dog_id:references:dogs
 
@@ -74,7 +75,7 @@ List will get appended during the process as features and missing parts presents
 
     [x] Add Breeds schema
     [x] Add Breeder schema
-    [ ] Add Champions schema
+    [x] Add Champions schema
     [ ] Add Color schema
     [ ] Add dog schema. (and relations to other dogs.)
     [x] Add person schema
@@ -83,7 +84,7 @@ List will get appended during the process as features and missing parts presents
     [x] dog import format
     [x] process fn for breeder import
     [x] breeder import format
-    [ ] process fn for champion import
+    [x] process fn for champion import
     [ ] process fn for color import
     [ ] Upload/Process fn for breed package (zip-file)
     [ ] Add veterinary data
