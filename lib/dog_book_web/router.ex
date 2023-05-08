@@ -36,6 +36,13 @@ defmodule DogBookWeb.Router do
 
     live "/persons/:id", PersonLive.Show, :show
     live "/persons/:id/show/edit", PersonLive.Show, :edit
+
+    live "/breeders", BreederLive.Index, :index
+    live "/breeders/new", BreederLive.Index, :new
+    live "/breeders/:id/edit", BreederLive.Index, :edit
+
+    live "/breeders/:id", BreederLive.Show, :show
+    live "/breeders/:id/show/edit", BreederLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

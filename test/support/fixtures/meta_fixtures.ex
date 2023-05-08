@@ -36,4 +36,19 @@ defmodule DogBook.MetaFixtures do
 
     person
   end
+
+  @doc """
+  Generate a breeder.
+  """
+  def breeder_fixture(attrs \\ %{}) do
+    {:ok, breeder} =
+      attrs
+      |> Enum.into(%{
+        name: "some name",
+        number: 42
+      })
+      |> DogBook.Meta.create_breeder()
+
+    breeder
+  end
 end

@@ -197,4 +197,100 @@ defmodule DogBook.Meta do
   def change_person(%Person{} = person, attrs \\ %{}) do
     Person.changeset(person, attrs)
   end
+
+  alias DogBook.Meta.Breeder
+
+  @doc """
+  Returns the list of breeders.
+
+  ## Examples
+
+      iex> list_breeders()
+      [%Breeder{}, ...]
+
+  """
+  def list_breeders do
+    Repo.all(Breeder)
+  end
+
+  @doc """
+  Gets a single breeder.
+
+  Raises `Ecto.NoResultsError` if the Breeder does not exist.
+
+  ## Examples
+
+      iex> get_breeder!(123)
+      %Breeder{}
+
+      iex> get_breeder!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_breeder!(id), do: Repo.get!(Breeder, id)
+
+  @doc """
+  Creates a breeder.
+
+  ## Examples
+
+      iex> create_breeder(%{field: value})
+      {:ok, %Breeder{}}
+
+      iex> create_breeder(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_breeder(attrs \\ %{}) do
+    %Breeder{}
+    |> Breeder.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a breeder.
+
+  ## Examples
+
+      iex> update_breeder(breeder, %{field: new_value})
+      {:ok, %Breeder{}}
+
+      iex> update_breeder(breeder, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_breeder(%Breeder{} = breeder, attrs) do
+    breeder
+    |> Breeder.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a breeder.
+
+  ## Examples
+
+      iex> delete_breeder(breeder)
+      {:ok, %Breeder{}}
+
+      iex> delete_breeder(breeder)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_breeder(%Breeder{} = breeder) do
+    Repo.delete(breeder)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking breeder changes.
+
+  ## Examples
+
+      iex> change_breeder(breeder)
+      %Ecto.Changeset{data: %Breeder{}}
+
+  """
+  def change_breeder(%Breeder{} = breeder, attrs \\ %{}) do
+    Breeder.changeset(breeder, attrs)
+  end
 end

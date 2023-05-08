@@ -120,4 +120,60 @@ defmodule DogBook.MetaTest do
       assert %Ecto.Changeset{} = Meta.change_person(person)
     end
   end
+
+  describe "breeders" do
+    alias DogBook.Meta.Breeder
+
+    import DogBook.MetaFixtures
+
+    @invalid_attrs %{name: nil, number: nil}
+
+    test "list_breeders/0 returns all breeders" do
+      breeder = breeder_fixture()
+      assert Meta.list_breeders() == [breeder]
+    end
+
+    test "get_breeder!/1 returns the breeder with given id" do
+      breeder = breeder_fixture()
+      assert Meta.get_breeder!(breeder.id) == breeder
+    end
+
+    test "create_breeder/1 with valid data creates a breeder" do
+      valid_attrs = %{name: "some name", number: 42}
+
+      assert {:ok, %Breeder{} = breeder} = Meta.create_breeder(valid_attrs)
+      assert breeder.name == "some name"
+      assert breeder.number == 42
+    end
+
+    test "create_breeder/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Meta.create_breeder(@invalid_attrs)
+    end
+
+    test "update_breeder/2 with valid data updates the breeder" do
+      breeder = breeder_fixture()
+      update_attrs = %{name: "some updated name", number: 43}
+
+      assert {:ok, %Breeder{} = breeder} = Meta.update_breeder(breeder, update_attrs)
+      assert breeder.name == "some updated name"
+      assert breeder.number == 43
+    end
+
+    test "update_breeder/2 with invalid data returns error changeset" do
+      breeder = breeder_fixture()
+      assert {:error, %Ecto.Changeset{}} = Meta.update_breeder(breeder, @invalid_attrs)
+      assert breeder == Meta.get_breeder!(breeder.id)
+    end
+
+    test "delete_breeder/1 deletes the breeder" do
+      breeder = breeder_fixture()
+      assert {:ok, %Breeder{}} = Meta.delete_breeder(breeder)
+      assert_raise Ecto.NoResultsError, fn -> Meta.get_breeder!(breeder.id) end
+    end
+
+    test "change_breeder/1 returns a breeder changeset" do
+      breeder = breeder_fixture()
+      assert %Ecto.Changeset{} = Meta.change_breeder(breeder)
+    end
+  end
 end

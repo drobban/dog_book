@@ -23,9 +23,10 @@ once the server is up, run:
 ## Data
 
 ```bash
-**don**
+**done**
 mix phx.gen.live Meta Person persons name:string street:string zip_code:integer city:string phone:string
 
+**done**
 mix phx.gen.live Meta Breeder breeders number:integer name:string
 **relations**
 many_to_many persons:references:persons
