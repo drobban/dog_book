@@ -18,6 +18,12 @@ defmodule DogBook.Data.Dog do
 
     many_to_many :parents, DogBook.Data.Dog,
       join_through: DogBook.Data.DogParents,
+      join_keys: [parent_id: :id, dog_id: :id],
+      on_replace: :delete
+
+    many_to_many :dogs, DogBook.Data.Dog,
+      join_through: DogBook.Data.DogParents,
+      join_keys: [dog_id: :id, parent_id: :id],
       on_replace: :delete
 
     has_many :records, DogBook.Data.Record
@@ -76,11 +82,9 @@ defmodule DogBook.Data.Dog do
   end
 
   def imperfect_changeset(dog, attrs) do
-    _parents = Map.get(attrs, :parents, [])
     records = Map.get(attrs, :records, [])
 
     dog
-    |> DogBook.Repo.preload(:records)
     |> cast(attrs, [
       :name,
       :gender,
@@ -96,7 +100,34 @@ defmodule DogBook.Data.Dog do
       :breeder_id
     ])
     |> put_assoc(:records, records)
-    # |> put_assoc(:parents, parents)
+    |> validate_required([
+      :name,
+      :gender,
+      :observe,
+      :testicle_status
+    ])
+  end
+
+  def parents_changeset(dog, attrs) do
+    parents = Map.get(attrs, :parents, [nil])
+
+    dog
+    |> DogBook.Repo.preload(:parents)
+    |> cast(attrs, [
+      :name,
+      :gender,
+      :birth_date,
+      :breed_specific,
+      :coat,
+      :size,
+      :observe,
+      :testicle_status,
+      :partial,
+      :breed_id,
+      :color_id,
+      :breeder_id
+    ])
+    |> put_assoc(:parents, parents)
     |> validate_required([
       :name,
       :gender,

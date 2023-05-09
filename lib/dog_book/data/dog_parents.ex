@@ -3,8 +3,8 @@ defmodule DogBook.Data.DogParents do
   import Ecto.Changeset
 
   schema "dog_parents" do
-    belongs_to :dog, DogBook.Data.Dog
-    belongs_to :parent, DogBook.Data.Dog
+    field :dog_id, :id
+    field :parent_id, :id
 
     timestamps()
   end

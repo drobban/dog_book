@@ -55,6 +55,33 @@ defmodule DogBook.Data.DogImport do
     end
   end
 
+  def parent_attrs(dog) do
+    Enum.reduce(dog, %{}, fn {k, v}, acc ->
+      cond do
+        k == :birth_date and !is_nil(v) and v != "" ->
+          year = String.slice(v, 0..3)
+          month = String.slice(v, 4..5)
+          day = String.slice(v, 6..7)
+          Map.put(acc, k, Date.from_iso8601!("#{year}-#{month}-#{day}"))
+
+        k == [:parents, :father_id] and !is_nil(v) and v != "" ->
+          Map.put(acc, k, v)
+
+        k == [:parents, :mother_id] and !is_nil(v) and v != "" ->
+          Map.put(acc, k, v)
+
+        k == [:record, :registry_uid] and !is_nil(v) and v != "" ->
+          Map.put(acc, :registry_uid, v)
+
+        k == :name and !is_nil(v) and v != "" ->
+          Map.put(acc, k, v)
+
+        true ->
+          acc
+      end
+    end)
+  end
+
   def to_cs_attrs(dog) do
     Enum.reduce(dog, %{}, fn {k, v}, acc ->
       cond do
@@ -147,32 +174,66 @@ defmodule DogBook.Data.DogImport do
       end)
       |> Enum.filter(fn x -> !Enum.empty?(x) end)
 
-    _dogs =
-      Enum.reduce(attr_collection, [], fn dog_attr, acc ->
-        record = dog_attr[:records] |> Enum.at(0)
+    Enum.reduce(attr_collection, [], fn dog_attr, acc ->
+      record = dog_attr[:records] |> Enum.at(0)
 
-        dog =
-          if is_nil(record.dog_id) do
-            cs = %Dog{} |> Dog.imperfect_changeset(dog_attr)
+      dog =
+        if is_nil(record.dog_id) do
+          cs = %Dog{} |> Dog.imperfect_changeset(dog_attr)
 
-            if cs.valid? do
-              DogBook.Repo.insert(cs)
-            else
-              %Dog{}
-            end
+          if cs.valid? do
+            DogBook.Repo.insert(cs)
           else
-            dog = Data.get_dog!(record.dog_id)
-
-            dog_attr =
-              dog_attr
-              |> Map.put(:records, dog_attr[:records] ++ dog.records)
-
-            dog
-            |> Dog.imperfect_changeset(dog_attr)
-            |> DogBook.Repo.update()
+            %Dog{}
           end
+        else
+          dog = Data.get_dog!(record.dog_id)
 
-        [dog | acc]
+          dog_attr =
+            dog_attr
+            |> Map.put(:records, dog_attr[:records] ++ dog.records)
+
+          dog
+          |> Dog.imperfect_changeset(dog_attr)
+          |> DogBook.Repo.update()
+        end
+
+      [dog | acc]
+    end)
+
+    attr_parents =
+      Enum.reduce(dogs, [], fn dog, acc ->
+        [parent_attrs(dog) | acc]
       end)
+      |> Enum.filter(fn x -> !Enum.empty?(x) end)
+      |> Enum.filter(fn x -> Map.has_key?(x, [:parents, :father_id]) end)
+
+    relations =
+      Enum.reduce(attr_parents, [], fn e, acc ->
+        father = Data.get_record_registry_uid!(Map.get(e, [:parents, :father_id]))
+        mother = Data.get_record_registry_uid!(Map.get(e, [:parents, :mother_id]))
+        child = Data.get_record_registry_uid!(Map.get(e, :registry_uid))
+        [{father.dog_id, mother.dog_id, child.dog_id} | acc]
+      end)
+
+    Enum.reduce(relations, [], fn {f, m, c}, acc ->
+      attrs = %{parents: [Data.get_dog!(f), Data.get_dog!(m)]}
+
+      {:ok, child} =
+        Data.get_dog!(c)
+        |> Dog.parents_changeset(attrs)
+        |> DogBook.Repo.update()
+
+      [child | acc]
+    end)
+  end
+
+  def setup() do
+    DogBook.Meta.BreedImport.process_breed()
+    DogBook.Meta.BreederImport.process_breeder()
+    DogBook.Meta.ChampImport.process_champ()
+    DogBook.Meta.ColorImport.process_color()
+
+    DogBook.Data.DogImport.process_dog()
   end
 end
