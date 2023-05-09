@@ -6,7 +6,7 @@ defmodule DogBook.Meta.BreedImport do
   Maybe cp850 is more correct to be used. Needs further investigation.
   """
   alias DogBook.Meta.Breed
-  @default_path "priv/test_data/temp2.txt"
+  @default_path "priv/test_data/Hras.txt"
 
   @breed_format %{
     0 => :number,
@@ -30,16 +30,12 @@ defmodule DogBook.Meta.BreedImport do
     Breed.changeset(%Breed{}, breed)
   end
 
-  # TODO: Have a look at how file is processed in dog_import
-  # refactor so the file is read in cp850 and then transformed utf-8
-  #
-  # NEED TESTING TO MAKE SURE IT WORKS!
   def process_breed(file_path \\ @default_path) do
     {:ok, result} = File.read(file_path)
 
     lines =
       :iconv.convert("cp852", "utf-8", result)
-      |> String.split("\r")
+      |> String.split("\r\n")
 
     breeds = Enum.reduce(lines, [], fn line, acc -> [breed_read(line) | acc] end)
 
