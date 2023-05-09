@@ -27,9 +27,6 @@ defmodule DogBook.Data.Dog do
 
   @doc false
   def changeset(dog, attrs) do
-    parents = Map.get(attrs, :parents, [])
-    records = Map.get(attrs, :records, [])
-
     dog
     |> cast(attrs, [
       :name,
@@ -45,8 +42,7 @@ defmodule DogBook.Data.Dog do
       :color_id,
       :breeder_id
     ])
-    |> put_assoc(:parents, parents)
-    |> put_assoc(:records, records)
+    # |> put_assoc(:parents, parents)
     |> validate_required([
       :name,
       :gender,
@@ -57,8 +53,6 @@ defmodule DogBook.Data.Dog do
   end
 
   def partial_parent(dog, attrs) do
-    records = Map.get(attrs, :records, [])
-
     dog
     |> cast(attrs, [
       :name,
@@ -69,12 +63,45 @@ defmodule DogBook.Data.Dog do
       :size,
       :observe,
       :testicle_status,
-      :partial
+      :partial,
+      :breed_id,
+      :color_id,
+      :breeder_id
     ])
-    |> put_assoc(:records, records)
+    # |> put_assoc(:parents, parents)
     |> validate_required([
       :gender,
-      :partial
+      :breed_id
+    ])
+  end
+
+  def imperfect_changeset(dog, attrs) do
+    _parents = Map.get(attrs, :parents, [])
+    records = Map.get(attrs, :records, [])
+
+    dog
+    |> DogBook.Repo.preload(:records)
+    |> cast(attrs, [
+      :name,
+      :gender,
+      :birth_date,
+      :breed_specific,
+      :coat,
+      :size,
+      :observe,
+      :testicle_status,
+      :partial,
+      :breed_id,
+      :color_id,
+      :breeder_id
+    ])
+    |> put_assoc(:records, records)
+    # |> put_assoc(:parents, parents)
+    |> validate_required([
+      :name,
+      :gender,
+      :observe,
+      :testicle_status
     ])
   end
 end

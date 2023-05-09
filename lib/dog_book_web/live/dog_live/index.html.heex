@@ -12,10 +12,20 @@
   rows={@streams.dogs}
   row_click={fn {_id, dog} -> JS.navigate(~p"/admin/dogs/#{dog}") end}
 >
+  <:col :let={{_id, dog}} label="Breed">
+    <%= if !is_nil(dog.breed_id), do: dog.breed.name, else: "-" %>
+  </:col>
   <:col :let={{_id, dog}} label="Name"><%= dog.name %></:col>
   <:col :let={{_id, dog}} label="Gender"><%= dog.gender %></:col>
   <:col :let={{_id, dog}} label="Birth date"><%= dog.birth_date %></:col>
   <:col :let={{_id, dog}} label="Breed specific"><%= dog.breed_specific %></:col>
+  <:col :let={{_id, dog}} label="Registry">
+    <%= if !Enum.empty?(dog.records) do %>
+      <%= Enum.reduce(dog.records, "", fn d, acc -> "#{d.registry_uid} #{acc}" end) %>
+    <% else %>
+      -
+    <% end %>
+  </:col>
   <:col :let={{_id, dog}} label="Coat"><%= dog.coat %></:col>
   <:col :let={{_id, dog}} label="Size"><%= dog.size %></:col>
   <:col :let={{_id, dog}} label="Observe"><%= dog.observe %></:col>

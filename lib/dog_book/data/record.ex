@@ -13,7 +13,7 @@ defmodule DogBook.Data.Record do
   @doc false
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:registry_uid, :country, :dog_id])
+    |> cast(attrs, [:registry_uid, :country])
     |> validate_required([:registry_uid])
   end
 end

@@ -20,7 +20,7 @@ defmodule DogBook.Data do
   """
   def list_dogs do
     Repo.all(Dog)
-    |> Repo.preload([:parents, :records])
+    |> Repo.preload([:parents, :records, :breed])
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule DogBook.Data do
       ** (Ecto.NoResultsError)
 
   """
-  def get_dog!(id), do: Repo.get!(Dog, id) |> Repo.preload([:parents, :records])
+  def get_dog!(id), do: Repo.get!(Dog, id) |> Repo.preload([:parents, :records, :breed])
 
   @doc """
   Creates a dog.
@@ -52,9 +52,12 @@ defmodule DogBook.Data do
 
   """
   def create_dog(attrs \\ %{}) do
+    # {status, dog} =
     %Dog{}
     |> Dog.changeset(attrs)
     |> Repo.insert()
+
+    # {status, dog |> Repo.preload([:parents, :records, :breed])}
   end
 
   def create_partial_dog(attrs) do
@@ -82,6 +85,7 @@ defmodule DogBook.Data do
           %{}
           |> Map.put(:partial, true)
           |> Map.put(:gender, attrs[:gender])
+          |> Map.put(:breed_id, attrs[:breed_id])
           |> Map.put(:records, [record])
 
         create_partial_dog(partial_dog)
@@ -169,6 +173,22 @@ defmodule DogBook.Data do
 
   """
   def get_record!(id), do: Repo.get!(Record, id)
+
+  def get_record_registry_uid!(nil), do: nil
+
+  def get_record_registry_uid!(uid) do
+    # If we get a match - we assume it to be the same person.
+    query =
+      from r in Record,
+        where: r.registry_uid == ^uid,
+        select: r
+
+    results =
+      query
+      |> Repo.all()
+
+    if Enum.empty?(results), do: nil, else: Enum.at(results, 0)
+  end
 
   @doc """
   Creates a record.

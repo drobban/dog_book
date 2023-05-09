@@ -7,6 +7,8 @@ defmodule DogBook.Meta.Breed do
     field :number, :integer
     field :sbk_working_dog, :boolean, default: false
 
+    # has_many :dogs, DogBook.Data.Dog
+
     timestamps()
   end
 

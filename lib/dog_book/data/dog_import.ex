@@ -6,6 +6,7 @@ defmodule DogBook.Data.DogImport do
   """
   alias DogBook.Data.Dog
   alias DogBook.Data
+  alias DogBook.Meta
   @default_path 'priv/test_data/data/h12501.txt'
 
   # Check if we can work with ranges.
@@ -43,61 +44,50 @@ defmodule DogBook.Data.DogImport do
     15 => @testicle_mappings
   }
 
-  def dog_changeset(attrs) do
-    initialized_attrs =
-      Enum.reduce(attrs, %{}, fn {k, v}, acc ->
-        case k do
-          [:breed, :number] ->
-            if v == "" or is_nil(v) do
-              Map.put(acc, :breed_id, nil)
-            else
-              breed = DogBook.Meta.get_breed_number!(v)
-              Map.put(acc, :breed_id, breed.id)
-            end
+  def get_record(attr) do
+    record = Data.get_record_registry_uid!(attr[:registry_uid])
 
-          [:breeder, :number] ->
-            if v == "" or is_nil(v) do
-              Map.put(acc, :breeder_id, nil)
-            else
-              breeder = DogBook.Meta.get_breeder_number!(v)
-              Map.put(acc, :breeder_id, breeder.id)
-            end
+    if is_nil(record) do
+      {:ok, record} = Data.create_record(attr)
+      record
+    else
+      record
+    end
+  end
 
-          [:parents, :father_id] when not is_nil(v) ->
-            # parent_attrs = %{gender: :male, registry_uid: v}
-            parent_attrs = %{gender: :male, registry_uid: v}
-            parent = Dog.partial_parent(%Dog{}, parent_attrs)
-            # parent = Data.get_or_create_parent(parent_attrs)
-            parents = Map.get(acc, :parents, [])
-            Map.put(acc, :parents, [parent | parents])
+  def to_cs_attrs(dog) do
+    Enum.reduce(dog, %{}, fn {k, v}, acc ->
+      cond do
+        k == :birth_date and !is_nil(v) and v != "" ->
+          year = String.slice(v, 0..3)
+          month = String.slice(v, 4..5)
+          day = String.slice(v, 6..7)
+          Map.put(acc, k, Date.from_iso8601!("#{year}-#{month}-#{day}"))
 
-          [:parents, :mother_id] when not is_nil(v) ->
-            # parent_attrs = %{gender: :female, registry_uid: v}
-            parent_attrs = %{gender: :female, registry_uid: v}
-            parent = Dog.partial_parent(%Dog{}, parent_attrs)
-            # parent = Data.get_or_create_parent(parent_attrs)
-            parents = Map.get(acc, :parents, [])
-            Map.put(acc, :parents, [parent | parents])
+        k == [:breed, :number] and !is_nil(v) and v != "" ->
+          breed = DogBook.Meta.get_breed_number!(v)
+          Map.put(acc, :breed_id, breed.id)
 
-          x when is_atom(x) ->
-            Map.put(acc, x, v)
+        k == [:record, :registry_uid] and !is_nil(v) and v != "" ->
+          trimmed_v = String.trim(v, " ")
+          record = get_record(%{registry_uid: trimmed_v})
+          Map.put(acc, :records, [record])
 
-          _else ->
-            acc
-        end
-      end)
+        k == [:breeder, :number] and !is_nil(v) and v != "" ->
+          breeder = Meta.get_breeder_number!(v)
+          Map.put(acc, :breeder_id, breeder.id)
 
-    dog_cs = Dog.changeset(%Dog{}, initialized_attrs)
+        k == [:color, :number] and !is_nil(v) and v != "" ->
+          color = Meta.get_color_number!(v)
+          Map.put(acc, :color_id, color.id)
 
-    [dog_cs, initialized_attrs]
-    # if dog_cs.valid? do
-    #   # Dog.create_dog(dog_cs.changes)
-    #   dog_cs
-    # else
-    #   # initialized_attrs = initialized_attrs |> Map.put(:partial, true)
-    #   # Dog.partial_parent(%Dog{}, initialized_attrs)
-    #   initialized_attrs |> Map.put(:partial, true)
-    # end
+        is_atom(k) and !is_nil(v) and v != "" ->
+          Map.put(acc, k, v)
+
+        true ->
+          acc
+      end
+    end)
   end
 
   def dog_read(line) do
@@ -151,9 +141,38 @@ defmodule DogBook.Data.DogImport do
         [dog_read(line) | acc]
       end)
 
-    Enum.reduce(dogs, [], fn dog, acc ->
-      [dog_changeset(dog) | acc]
-    end)
-    |> Enum.at(50)
+    attr_collection =
+      Enum.reduce(dogs, [], fn dog, acc ->
+        [to_cs_attrs(dog) | acc]
+      end)
+      |> Enum.filter(fn x -> !Enum.empty?(x) end)
+
+    _dogs =
+      Enum.reduce(attr_collection, [], fn dog_attr, acc ->
+        record = dog_attr[:records] |> Enum.at(0)
+
+        dog =
+          if is_nil(record.dog_id) do
+            cs = %Dog{} |> Dog.imperfect_changeset(dog_attr)
+
+            if cs.valid? do
+              DogBook.Repo.insert(cs)
+            else
+              %Dog{}
+            end
+          else
+            dog = Data.get_dog!(record.dog_id)
+
+            dog_attr =
+              dog_attr
+              |> Map.put(:records, dog_attr[:records] ++ dog.records)
+
+            dog
+            |> Dog.imperfect_changeset(dog_attr)
+            |> DogBook.Repo.update()
+          end
+
+        [dog | acc]
+      end)
   end
 end

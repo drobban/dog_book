@@ -34,7 +34,8 @@ defmodule DogBookWeb.DogLive.Index do
 
   @impl true
   def handle_info({DogBookWeb.DogLive.FormComponent, {:saved, dog}}, socket) do
-    {:noreply, stream_insert(socket, :dogs, dog)}
+    {:noreply,
+     stream_insert(socket, :dogs, dog |> DogBook.Repo.preload([:parents, :records, :breed]))}
   end
 
   @impl true
