@@ -140,6 +140,8 @@ defmodule DogBook.Data.DogImport do
               end
             end)
 
+          champs = champs |> MapSet.new() |> MapSet.to_list()
+
           if Enum.empty?(champs) do
             acc
           else
