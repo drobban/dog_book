@@ -6,7 +6,7 @@ defmodule DogBook.Meta.ChampImport do
   """
 
   alias DogBook.Meta.Champion
-  @default_path "priv/test_data/data/hchamp.txt"
+  @default_path "priv/test_data/data/145/hchamp.txt"
 
   @champ_format %{
     0 => :number,

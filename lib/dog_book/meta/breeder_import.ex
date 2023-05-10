@@ -18,7 +18,7 @@ defmodule DogBook.Meta.BreederImport do
   to be of equal length. For each key in list c there should be a corrensponding idx in range.
 
   """
-  @default_path "priv/test_data/data/u12501.txt"
+  @default_path "priv/test_data/data/145/u14501.txt"
 
   @breeder_format %{
     0 => :number,

@@ -7,7 +7,7 @@ defmodule DogBook.Data.DogImport do
   alias DogBook.Data.Dog
   alias DogBook.Data
   alias DogBook.Meta
-  @default_path 'priv/test_data/data/h12501.txt'
+  @default_path 'priv/test_data/data/145/h14501.txt'
 
   # Check if we can work with ranges.
   @dog_format %{
@@ -62,7 +62,16 @@ defmodule DogBook.Data.DogImport do
           year = String.slice(v, 0..3)
           month = String.slice(v, 4..5)
           day = String.slice(v, 6..7)
-          Map.put(acc, k, Date.from_iso8601!("#{year}-#{month}-#{day}"))
+          {status, date} = Date.from_iso8601("#{year}-#{month}-#{day}")
+
+          date =
+            if status == :error do
+              nil
+            else
+              date
+            end
+
+          Map.put(acc, k, date)
 
         k == [:parents, :father_id] and !is_nil(v) and v != "" ->
           Map.put(acc, k, v)
@@ -89,7 +98,16 @@ defmodule DogBook.Data.DogImport do
           year = String.slice(v, 0..3)
           month = String.slice(v, 4..5)
           day = String.slice(v, 6..7)
-          Map.put(acc, k, Date.from_iso8601!("#{year}-#{month}-#{day}"))
+          {status, date} = Date.from_iso8601("#{year}-#{month}-#{day}")
+
+          date =
+            if status == :error do
+              nil
+            else
+              date
+            end
+
+          Map.put(acc, k, date)
 
         k == [:breed, :number] and !is_nil(v) and v != "" ->
           breed = DogBook.Meta.get_breed_number!(v)
@@ -102,8 +120,9 @@ defmodule DogBook.Data.DogImport do
           Map.put(acc, :records, [record])
 
         k == [:breeder, :number] and !is_nil(v) and v != "" ->
-          breeder = Meta.get_breeder_number!(v)
-          Map.put(acc, :breeder_id, breeder.id)
+          breeder = Meta.get_breeder_number(v)
+          id = if !is_nil(breeder), do: breeder.id, else: nil
+          Map.put(acc, :breeder_id, id)
 
         k == [:color, :number] and !is_nil(v) and v != "" ->
           color = Meta.get_color_number!(v)
@@ -113,7 +132,8 @@ defmodule DogBook.Data.DogImport do
           champs =
             Enum.reduce(v, [], fn x, acc ->
               if x != "" and !is_nil(x) do
-                [Meta.get_champion_number!(String.trim(x, " ")) | acc]
+                number = if String.to_integer(x) > 2000, do: String.slice(x, -3, 3), else: x
+                [Meta.get_champion_number!(number) | acc]
               else
                 acc
               end

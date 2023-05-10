@@ -256,6 +256,7 @@ defmodule DogBook.Meta do
   def get_breeder!(id), do: Repo.get!(Breeder, id) |> Repo.preload(:persons)
 
   def get_breeder_number!(number), do: Repo.get_by!(Breeder, number: number)
+  def get_breeder_number(number), do: Repo.get_by(Breeder, number: number)
 
   @doc """
   Creates a breeder.
@@ -397,10 +398,12 @@ defmodule DogBook.Meta do
   end
 
   def update_or_create_champion(attrs) do
+    number = String.trim(attrs[:number], " ")
+
     # If we get a match - we assume it to be the same person.
     query =
       from c in Champion,
-        where: c.number == ^attrs[:number],
+        where: c.number == ^number,
         select: c
 
     results =
