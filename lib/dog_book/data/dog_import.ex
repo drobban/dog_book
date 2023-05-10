@@ -125,8 +125,9 @@ defmodule DogBook.Data.DogImport do
           Map.put(acc, :breeder_id, id)
 
         k == [:color, :number] and !is_nil(v) and v != "" ->
-          color = Meta.get_color_number!(v)
-          Map.put(acc, :color_id, color.id)
+          color = Meta.get_color_number(v)
+          id = if !is_nil(color), do: color.id, else: nil
+          Map.put(acc, :color_id, id)
 
         k == [:championships, :number] and !is_nil(v) ->
           champs =

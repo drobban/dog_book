@@ -501,6 +501,7 @@ defmodule DogBook.Meta do
   def get_color!(id), do: Repo.get!(Color, id)
 
   def get_color_number!(number), do: Repo.get_by!(Color, number: number)
+  def get_color_number(number), do: Repo.get_by(Color, number: number)
 
   @doc """
   Creates a color.
