@@ -23,7 +23,7 @@ defmodule DogBook.DataFixtures do
       })
       |> DogBook.Data.create_dog()
 
-    dog |> DogBook.Repo.preload([:records, :breed, :parents])
+    dog |> DogBook.Repo.preload([:records, :breed, :parents, :champions])
   end
 
   @doc """

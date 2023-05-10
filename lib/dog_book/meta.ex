@@ -376,6 +376,8 @@ defmodule DogBook.Meta do
   """
   def get_champion!(id), do: Repo.get!(Champion, id)
 
+  def get_champion_number!(number), do: Repo.get_by!(Champion, number: number)
+
   @doc """
   Creates a champion.
 

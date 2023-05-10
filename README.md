@@ -53,7 +53,7 @@ mix phx.gen.schema Meta.BreederPersons breeder_persons breeder_id:references:bre
 **done**
 mix phx.gen.schema Data.DogParents dog_parents dog_id:references:dogs parent_id:references:dogs
 
-
+**done**
 mix phx.gen.schema Meta.ChampionDogs champion_dogs champion_id:references:champions dog_id:references:dogs
 ```
 
@@ -84,7 +84,7 @@ List will get appended during the process as features and missing parts presents
     [x] Add dog schema. (and relations to other dogs.)
     [x] Add person schema
     [x] process fn for breeds.
-    [ ] process fn for dog import
+    [x] process fn for dog import
     [x] dog import format
     [x] process fn for breeder import
     [x] breeder import format

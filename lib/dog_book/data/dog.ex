@@ -28,6 +28,10 @@ defmodule DogBook.Data.Dog do
 
     has_many :records, DogBook.Data.Record
 
+    many_to_many :champions, DogBook.Meta.Champion,
+      join_through: DogBook.Meta.ChampionDogs,
+      on_replace: :delete
+
     timestamps()
   end
 
@@ -58,6 +62,33 @@ defmodule DogBook.Data.Dog do
     ])
   end
 
+  def update_changeset(dog, attrs) do
+    champions = Map.get(attrs, :champions, [])
+
+    dog
+    |> cast(attrs, [
+      :name,
+      :gender,
+      :birth_date,
+      :breed_specific,
+      :coat,
+      :size,
+      :observe,
+      :testicle_status,
+      :partial,
+      :breed_id,
+      :color_id,
+      :breeder_id
+    ])
+    |> put_assoc(:champions, champions)
+    |> validate_required([
+      :name,
+      :gender,
+      :observe,
+      :testicle_status
+    ])
+  end
+
   def partial_parent(dog, attrs) do
     dog
     |> cast(attrs, [
@@ -83,6 +114,7 @@ defmodule DogBook.Data.Dog do
 
   def imperfect_changeset(dog, attrs) do
     records = Map.get(attrs, :records, [])
+    champions = Map.get(attrs, :champions, [])
 
     dog
     |> cast(attrs, [
@@ -100,6 +132,7 @@ defmodule DogBook.Data.Dog do
       :breeder_id
     ])
     |> put_assoc(:records, records)
+    |> put_assoc(:champions, champions)
     |> validate_required([
       :name,
       :gender,

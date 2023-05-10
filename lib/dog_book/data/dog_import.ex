@@ -96,6 +96,7 @@ defmodule DogBook.Data.DogImport do
           Map.put(acc, :breed_id, breed.id)
 
         k == [:record, :registry_uid] and !is_nil(v) and v != "" ->
+          # Here we need to check dog name for existing dog.
           trimmed_v = String.trim(v, " ")
           record = get_record(%{registry_uid: trimmed_v})
           Map.put(acc, :records, [record])
@@ -107,6 +108,22 @@ defmodule DogBook.Data.DogImport do
         k == [:color, :number] and !is_nil(v) and v != "" ->
           color = Meta.get_color_number!(v)
           Map.put(acc, :color_id, color.id)
+
+        k == [:championships, :number] and !is_nil(v) ->
+          champs =
+            Enum.reduce(v, [], fn x, acc ->
+              if x != "" and !is_nil(x) do
+                [Meta.get_champion_number!(String.trim(x, " ")) | acc]
+              else
+                acc
+              end
+            end)
+
+          if Enum.empty?(champs) do
+            acc
+          else
+            Map.put(acc, :champions, champs)
+          end
 
         is_atom(k) and !is_nil(v) and v != "" ->
           Map.put(acc, k, v)
@@ -177,6 +194,9 @@ defmodule DogBook.Data.DogImport do
     Enum.reduce(attr_collection, [], fn dog_attr, acc ->
       record = dog_attr[:records] |> Enum.at(0)
 
+      # Search for name...
+      # If we find existing, update else insert.
+      # If record.dog_id is nil. Set it to current dog.
       dog =
         if is_nil(record.dog_id) do
           cs = %Dog{} |> Dog.imperfect_changeset(dog_attr)
@@ -193,9 +213,10 @@ defmodule DogBook.Data.DogImport do
             dog_attr
             |> Map.put(:records, dog_attr[:records] ++ dog.records)
 
-          dog
-          |> Dog.imperfect_changeset(dog_attr)
-          |> DogBook.Repo.update()
+          {:ok, _dog} =
+            dog
+            |> Dog.update_changeset(dog_attr)
+            |> DogBook.Repo.update()
         end
 
       [dog | acc]

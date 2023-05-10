@@ -20,7 +20,7 @@ defmodule DogBook.Data do
   """
   def list_dogs do
     Repo.all(Dog)
-    |> Repo.preload([:parents, :records, :breed])
+    |> Repo.preload([:parents, :records, :breed, :champions])
   end
 
   @doc """
@@ -37,7 +37,8 @@ defmodule DogBook.Data do
       ** (Ecto.NoResultsError)
 
   """
-  def get_dog!(id), do: Repo.get!(Dog, id) |> Repo.preload([:parents, :records, :breed])
+  def get_dog!(id),
+    do: Repo.get!(Dog, id) |> Repo.preload([:parents, :records, :breed, :champions])
 
   @doc """
   Creates a dog.
