@@ -6,7 +6,7 @@ defmodule DogBook.Meta.ChampImport do
   """
 
   alias DogBook.Meta.Champion
-  @default_path "priv/test_data/data/145/hchamp.txt"
+  @default_path "priv/test_data/motherload/hchamp.txt"
 
   @champ_format %{
     0 => :number,
@@ -43,7 +43,7 @@ defmodule DogBook.Meta.ChampImport do
 
     lines =
       :iconv.convert("cp852", "utf-8", result)
-      |> String.split("\r")
+      |> String.split("\r\n")
 
     Enum.reduce(lines, [], fn line, acc ->
       [champ_read(line) | acc]

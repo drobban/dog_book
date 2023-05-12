@@ -18,7 +18,7 @@ defmodule DogBook.Meta.BreederImport do
   to be of equal length. For each key in list c there should be a corrensponding idx in range.
 
   """
-  @default_path "priv/test_data/data/145/u14501.txt"
+  @default_path "priv/test_data/motherload/u00001.txt"
 
   @breeder_format %{
     0 => :number,
@@ -104,7 +104,7 @@ defmodule DogBook.Meta.BreederImport do
 
     lines =
       :iconv.convert("cp852", "utf-8", result)
-      |> String.split("\r")
+      |> String.split("\r\n")
 
     breeders =
       Enum.reduce(lines, [], fn line, acc ->

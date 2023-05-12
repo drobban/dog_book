@@ -7,7 +7,7 @@ defmodule DogBook.Data.DogImport do
   alias DogBook.Data.Dog
   alias DogBook.Data
   alias DogBook.Meta
-  @default_path 'priv/test_data/data/145/h14501.txt'
+  @default_path 'priv/test_data/motherload/h00001.txt'
 
   # Check if we can work with ranges.
   @dog_format %{
@@ -201,7 +201,7 @@ defmodule DogBook.Data.DogImport do
 
     lines =
       :iconv.convert("cp852", "utf-8", result)
-      |> String.split("\r")
+      |> String.split("\r\n")
 
     dogs =
       Enum.reduce(lines, [], fn line, acc ->
@@ -252,28 +252,54 @@ defmodule DogBook.Data.DogImport do
       |> Enum.filter(fn x -> !Enum.empty?(x) end)
       |> Enum.filter(fn x -> Map.has_key?(x, [:parents, :father_id]) end)
 
+    dog_record_data =
+      DogBook.Data.Record
+      |> DogBook.Repo.all()
+      |> DogBook.Repo.preload(:dog)
+      |> Enum.reduce(%{}, fn dog_record, acc ->
+        acc |> Map.put(dog_record.registry_uid, dog_record.dog)
+      end)
+
     relations =
       Enum.reduce(attr_parents, [], fn e, acc ->
-        father = Data.get_record_registry_uid!(Map.get(e, [:parents, :father_id]))
-        mother = Data.get_record_registry_uid!(Map.get(e, [:parents, :mother_id]))
-        child = Data.get_record_registry_uid!(Map.get(e, :registry_uid))
-        [{father.dog_id, mother.dog_id, child.dog_id} | acc]
+        father = dog_record_data |> Map.get(Map.get(e, [:parents, :father_id]), nil)
+        mother = dog_record_data |> Map.get(Map.get(e, [:parents, :mother_id]), nil)
+        child = dog_record_data |> Map.get(Map.get(e, :registry_uid), nil)
+
+        [{father, mother, child} | acc]
       end)
 
     Enum.reduce(relations, [], fn {f, m, c}, acc ->
-      attrs = %{parents: [Data.get_dog!(f), Data.get_dog!(m)]}
+      if !is_nil(c) do
+        parents =
+          [f, m]
+          |> Enum.filter(fn x -> !is_nil(x) end)
+          |> Enum.reduce([], fn x, acc -> [x | acc] end)
 
-      {:ok, child} =
-        Data.get_dog!(c)
-        |> Dog.parents_changeset(attrs)
-        |> DogBook.Repo.update()
+        attrs = %{parents: parents}
 
-      [child | acc]
+        {:ok, child} =
+          c
+          |> Dog.parents_changeset(attrs)
+          |> DogBook.Repo.update()
+
+        [child | acc]
+      else
+        acc
+      end
     end)
   end
 
   def setup() do
     DogBook.Meta.BreedImport.process_breed()
+    DogBook.Meta.BreederImport.process_breeder()
+    DogBook.Meta.ChampImport.process_champ()
+    DogBook.Meta.ColorImport.process_color()
+
+    DogBook.Data.DogImport.process_dog()
+  end
+
+  def bgf() do
     DogBook.Meta.BreederImport.process_breeder()
     DogBook.Meta.ChampImport.process_champ()
     DogBook.Meta.ColorImport.process_color()

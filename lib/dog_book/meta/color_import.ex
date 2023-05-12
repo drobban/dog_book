@@ -6,7 +6,7 @@ defmodule DogBook.Meta.ColorImport do
   """
 
   alias DogBook.Meta.Color
-  @default_path "priv/test_data/data/hfarg.txt"
+  @default_path "priv/test_data/motherload/hfarg.txt"
 
   @color_format %{
     0 => :number,
@@ -43,7 +43,7 @@ defmodule DogBook.Meta.ColorImport do
 
     lines =
       :iconv.convert("cp852", "utf-8", result)
-      |> String.split("\r")
+      |> String.split("\r\n")
 
     Enum.reduce(lines, [], fn line, acc ->
       [color_read(line) | acc]

@@ -37,6 +37,8 @@ defmodule DogBook.Data do
       ** (Ecto.NoResultsError)
 
   """
+  def get_dog!(nil), do: nil
+
   def get_dog!(id),
     do: Repo.get!(Dog, id) |> Repo.preload([:parents, :records, :breed, :champions])
 
@@ -182,6 +184,22 @@ defmodule DogBook.Data do
     query =
       from r in Record,
         where: r.registry_uid == ^uid,
+        select: r
+
+    results =
+      query
+      |> Repo.all()
+
+    if Enum.empty?(results), do: nil, else: Enum.at(results, 0)
+  end
+
+  def get_record_registry_uid_dog!(nil), do: nil
+
+  def get_record_registry_uid_dog!(uid) do
+    # If we get a match - we assume it to be the same person.
+    query =
+      from r in Record,
+        where: r.registry_uid == ^uid and not is_nil(r.dog_id),
         select: r
 
     results =
